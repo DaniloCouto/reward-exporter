@@ -27,6 +27,8 @@ const App = () => {
             setToken(localToken)
         }
     }, [])
+
+    console.log('token',token)
     
     if(!token){
         return (
