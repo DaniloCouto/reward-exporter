@@ -60,7 +60,7 @@ const RewardExport: React.FC<RewardExportProps> = ({ token }) => {
     const exportRewards = async () => {
         setLoading(true)
         if(selectedReward){
-          const redemptions = await getCustomRewardsRedemption(token, clientId, selectedReward, selectedReward)
+          const redemptions = await getCustomRewardsRedemption(token, clientId, selectedReward, selectedStatus)
           let simpleRedemptions : SimpleRedemption[] = []
           for (let i = 0; i < redemptions.length; i++ ){
             simpleRedemptions = [
