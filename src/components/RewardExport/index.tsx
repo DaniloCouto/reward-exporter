@@ -67,9 +67,9 @@ const RewardExport: React.FC<RewardExportProps> = ({ token }) => {
               ...simpleRedemptions,
               {
                 user_name: redemptions[i].user_name,
-                redemption: redemptions[i].reward.prompt
-              }
-            ]
+                redemption: redemptions[i].user_input,
+              },
+            ];
           }
           downloadExcel(simpleRedemptions)
           setLoading(false)
