@@ -34,7 +34,7 @@ export const getCustomRewards = async ( token: string, clientId: string | number
 
 export const getCustomRewardsRedemption = async ( token: string, clientId: string | number, rewardId: string | number, status: string ) : Promise<Redemption[] | []> => {
   try{
-    const PER_PAGE = 50
+    const PER_PAGE = 30
     let rewardsReturn : Redemption[] = []
     while ( !(rewardsReturn.length % PER_PAGE) || rewardsReturn.length === 0) {
       const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${clientId}&reward_id=${rewardId}&status=${status}&first=${PER_PAGE}&after=${rewardsReturn.length}`, {
@@ -50,5 +50,27 @@ export const getCustomRewardsRedemption = async ( token: string, clientId: strin
     return rewardsReturn;
   }catch{
     return []
+  }
+}
+
+export const registerCustomRewards = async ( token: string, clientId: string | number, title: string , cost: number, prompt: string, inputRequired: boolean ) : Promise<boolean> => {
+  try{
+    const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards?broadcaster_id=${clientId}`,{
+      method: 'POST',
+      headers: {
+        'Client-Id': APP_CLIENT_ID,
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ 
+        title,
+        cost,
+        prompt,
+        is_user_input_required: inputRequired
+      })
+    })
+    const data = await response.json();
+    return true;
+  }catch{
+    return false
   }
 }
