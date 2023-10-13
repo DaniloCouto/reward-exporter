@@ -50,6 +50,9 @@ export interface Client {
     email?: string;
     created_at: string;
   }
+  export interface Pagination {
+    cursor: string
+  }
   
   export interface Redemption {
     broadcaster_name: string
@@ -62,7 +65,11 @@ export interface Client {
     user_input: string
     status: string
     redeemed_at: string
-    reward: RewardRedemption
+  }
+
+  export interface RedemptionResponse{
+    data: Redemption[]
+    pagination?: Pagination
   }
   
   export interface RewardRedemption {

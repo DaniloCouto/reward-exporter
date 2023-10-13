@@ -1,5 +1,5 @@
 import { APP_CLIENT_ID } from "../utils/constants";
-import { Client, Redemption, Reward, RewardRedemption } from "./twitch_types";
+import { Client, Redemption, RedemptionResponse, Reward, RewardRedemption } from "./twitch_types";
 
 export const getBroadcasterId = async ( token: string ) : Promise<string> => {
   try{
@@ -36,16 +36,37 @@ export const getCustomRewardsRedemption = async ( token: string, clientId: strin
   try{
     const PER_PAGE = 50
     let rewardsReturn : Redemption[] = []
+    let cursor : string = ''
     while ( !(rewardsReturn.length % PER_PAGE) || rewardsReturn.length === 0) {
-      const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${clientId}&reward_id=${rewardId}&status=${status}&first=${PER_PAGE}&after=${(rewardsReturn.length + 1)}`, {
-        headers: {
-          'Client-Id': APP_CLIENT_ID,
-          Authorization: `Bearer ${token}`,
-        },
-      });
-      const data = await response.json();
-      const rewards = data.data as Redemption[]
-      rewardsReturn = [ ...rewardsReturn, ...rewards]
+      if( rewardsReturn.length === 0){
+        const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${clientId}&reward_id=${rewardId}&status=${status}&first=${PER_PAGE}&after=${(rewardsReturn.length + 1)}`, {
+          headers: {
+            'Client-Id': APP_CLIENT_ID,
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        const rewardsResponse = data as RedemptionResponse
+        const rewards = rewardsResponse.data 
+        if(rewardsResponse.pagination){
+          cursor = rewardsResponse.pagination.cursor
+        }
+        rewardsReturn = [ ...rewardsReturn, ...rewards]
+      }else if(cursor){
+        const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${clientId}&reward_id=${rewardId}&status=${status}&first=${PER_PAGE}&after=${cursor}`, {
+          headers: {
+            'Client-Id': APP_CLIENT_ID,
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        const rewardsResponse = data as RedemptionResponse
+        const rewards = rewardsResponse.data 
+        if(rewardsResponse.pagination){
+          cursor = rewardsResponse.pagination.cursor
+        }
+        rewardsReturn = [ ...rewardsReturn, ...rewards]
+      }
     }
     return rewardsReturn;
   }catch{
