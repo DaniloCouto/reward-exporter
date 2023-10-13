@@ -34,10 +34,10 @@ export const getCustomRewards = async ( token: string, clientId: string | number
 
 export const getCustomRewardsRedemption = async ( token: string, clientId: string | number, rewardId: string | number, status: string ) : Promise<Redemption[] | []> => {
   try{
-    const PER_PAGE = 30
+    const PER_PAGE = 50
     let rewardsReturn : Redemption[] = []
     while ( !(rewardsReturn.length % PER_PAGE) || rewardsReturn.length === 0) {
-      const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${clientId}&reward_id=${rewardId}&status=${status}&first=${PER_PAGE}&after=${rewardsReturn.length}`, {
+      const response = await fetch(`https://api.twitch.tv/helix/channel_points/custom_rewards/redemptions?broadcaster_id=${clientId}&reward_id=${rewardId}&status=${status}&first=${PER_PAGE}&after=${(rewardsReturn.length + 1)}`, {
         headers: {
           'Client-Id': APP_CLIENT_ID,
           Authorization: `Bearer ${token}`,
